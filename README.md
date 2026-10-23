@@ -1,5 +1,7 @@
 # 🐮 CowComic 📘
 
+Calls OpenAI directly from the React frontend. That's exactly what we can improve with your own Python backend
+
 Welcome to CowComic, a React Web Application where users can get a book recommended after completing a survey! If users want to save their book recommendation, they have the option to register for an account/login to their existing account to save books.  
 
 ## Why "CowComic"?
