@@ -97,45 +97,26 @@ function Survey({ onSubmit }) {
     setError('');
     
     try {
-      const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-      if (!API_KEY) {
-        throw new Error("API key is missing or not loaded correctly.");
+          // Send survey answers to our Python FastAPI backend
+    const response = await axios.post(
+      'http://127.0.0.1:8000/recommend',
+      {
+        genres,
+        keyword,
+        ageRating,
+        publishDate,
+        pageCount
       }
-      // Generate the prompt
-      const prompt = generatePrompt();
-      
-      // Send API request
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',  // Correct endpoint for chat-based models
-        {
-          model: 'gpt-3.5-turbo',  // Use the model you want (can also use 'gpt-4' or other models)
-          messages: [
-            { role: 'system', content: 'You are a book recommendation assistant.' },
-            { role: 'user', content: prompt },
-          ],
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`, //Authorization header with API key
-          },
-        }
-      );
-      
-      if (response.data && response.data.choices && response.data.choices[0]) {
-        // get chatgpt response
-        const content = response.data.choices[0].message.content;
-        // console log to confirm gpt is even giving a response
-        console.log("API response: ", content);
-        // parse the gpt response in JSON format
-        const parsedRecommendation= JSON.parse(content);
-        // use state to show parsedRecommendation
-        setRecommendation(parsedRecommendation);
-        // use a callback function to save parsedRecommendation in LoginHome.jsx
-        onSubmit(parsedRecommendation);
-      } else {
-        throw new Error('Unexpected API response format.');
-      }
+    );
+
+    // Get the recommendation returned by FastAPI
+    const book = response.data;
+
+    // Display the recommendation
+    setRecommendation(book);
+
+    // Pass the recommendation to the parent component
+    onSubmit(book);
 
     } catch (err) {
       setError('Error fetching the recommendation. Please try again.');
